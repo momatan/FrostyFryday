@@ -21,33 +21,37 @@ $$
 ;
 ```
 
+4. ワークシートでSELECTする
+```sql
+call SPY_ON_FIREY_FRIDEY.CORE.TOP_3_TOPICS();
+```
+![clear_week51](img/clear_week51.png)
 
-# せっかくなのでデータ参照する関数を作ってみる
+# Snowflake Native App 小咄
 
-データの参照は2パターンある。
+Snowflake Native Appのことを遠い世界の話だと思っている人が多いですが、実はそんなことはありません。
 
-1. アプリ内にテーブルを持ってそれを参照する
-2. アプリ外部のテーブルのデータを参照する
+Snowflakeユーザーはみんな気づかないうちに実はSnowflake Native Appを使っているのです。そのアプリの名前はSNOWFLAKE。
 
-2のアプリ外部のテーブルを参照するのがアプリの真骨頂といえる。これができるとアプリをプライベートシェアした際にプロバイダー側で編集したデータはアプリから参照した場合も変更を追従する。
-1の場合はアプリ自体がデータを保持した形でインストールされるため、共有したアプリをGetした時点でデータが固定される。
+実はACCOUNT_USAGEやCORTEXはNative Appなんですね。
 
-## 1. アプリ内にテーブルを持ってそれを参照する
-1. SPY_ON_FIREY_FRIDEYの中にテーブルを作ってそれをSELECTする関数を作る
-2. 誰かの環境に共有する
-3. Kommy環境で変更したデータが、共有には追従されないことを確認する
+![account_usage_is_native_app](img/account_usage_is_native_app.png)
 
-## 2. アプリ外部のテーブルのデータを参照する
-1. REFERENCEの概念を説明
+そう、SNOWFLAKEっていう名前のNative AppがデフォルトでインストールされているのがSnowflakeというサービスなんですね（紛らわしい）。我々は知らない間にNative Appに依存してたというわけです。
 
+# Snowflake Native App の真骨頂
+Snowflake Native AppはStreamlitアプリを共有できることがすごいのだと思っている方が多いと思うのですが、実はCLIの部分を共有できることがすごいのだというのが個人的な見解です。
 
-# Streamlitアプリを足してみる
-1. これSnowsightからやる方法なさそうなのでここまでやるならCLIでやるしかないか？
+CLIで使えるということは自動化できるということです。自動化のプロセスの中に差し込む関数やら何やらを共有できるということです。
 
+Pythonなどのプログラミング言語でパッケージを公開している状況と近いですね。それをSQLでできるというのがSnowflake Native Appの真の凄さだと思います。
 
-# 結局Snowflake Native Appって何がすごいの？
-1. データだけじゃなくてデータを活用するための関数を共有できるのがすごい
+# 実演 Cortex
 
+# 実演 Native App自作
 
 # PODBの気象アプリの話
-1. マーケットプレイスからダウンロードして使ってみる
+弊社は先日気象データを皆様がお持ちの住所や緯度経度と紐づけて作成するSnowflake Native Appをリリースしました。
+
+ブログを参照して使ってみてください！！！
+https://blog.truestar.co.jp/prepper/20250411/62507/
