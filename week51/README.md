@@ -108,6 +108,7 @@ There are 1 unused configuration paths:
 弊社は先日気象データを皆様がお持ちの住所や緯度経度と紐づけて作成するSnowflake Native Appをリリースしました。
 
 ブログを参照して使ってみてください！！！
+
 https://blog.truestar.co.jp/prepper/20250411/62507/
 
 （実はベータ版なのでFunctionは未実装なのですが、正式版にはなんとか）
