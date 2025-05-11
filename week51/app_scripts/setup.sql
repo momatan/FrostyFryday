@@ -1,0 +1,18 @@
+CREATE APPLICATION ROLE IF NOT EXISTS FROSTY_APP_ROLE;
+CREATE SCHEMA IF NOT EXISTS CORE;
+GRANT USAGE ON SCHEMA CORE TO APPLICATION ROLE FROSTY_APP_ROLE;
+
+CREATE OR REPLACE PROCEDURE CORE.TOP_3_TOPICS()
+  RETURNS STRING
+  LANGUAGE PYTHON
+  RUNTIME_VERSION = '3.11'
+  PACKAGES = ('snowflake-snowpark-python')
+  HANDLER = 'main'
+AS
+$$
+def main():
+    message = "Oh, they are obsessed with Arrays, how weird. And then it's all about Graphs and Dynamic Programming. How pathetic!"
+    return message
+$$;
+
+GRANT USAGE ON PROCEDURE CORE.TOP_3_TOPICS() TO APPLICATION ROLE FROSTY_APP_ROLE;

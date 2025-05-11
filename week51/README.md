@@ -27,6 +27,83 @@ call SPY_ON_FIREY_FRIDEY.CORE.TOP_3_TOPICS();
 ```
 ![clear_week51](img/clear_week51.png)
 
+これで回答というふうにしてもいいのですが、実はここまではApplication Packageの作り方なので実際にアプリケーションにしてみましょう。
+
+5. stageと必要なファイルを作る
+まずこのパッケージのバージョン用のファイルを置くDBを作ります。
+
+```sql
+CREATE DATABASE IF NOT EXISTS FROSTY_APP;
+CREATE SCHEMA IF NOT EXISTS FROSTY_APP.APP_DEV;
+CREATE OR REPLACE STAGE FROSTY_APP.APP_DEV.app_stage;
+```
+
+次にmanifest.ymlとsetup.sqlを作ります。このファイルはアプリのインストール時に読み込まれるファイルたちです。
+
+manifest.yml
+```yaml
+manifest_version: 1
+
+artifacts:
+  setup_script: setup.sql
+```
+
+setup.sql
+```sql
+CREATE APPLICATION ROLE IF NOT EXISTS FROSTY_APP_ROLE;
+CREATE SCHEMA IF NOT EXISTS CORE;
+GRANT USAGE ON SCHEMA CORE TO APPLICATION ROLE FROSTY_APP_ROLE;
+
+CREATE OR REPLACE PROCEDURE CORE.TOP_3_TOPICS()
+  RETURNS STRING
+  LANGUAGE PYTHON
+  RUNTIME_VERSION = '3.11'
+  PACKAGES = ('snowflake-snowpark-python')
+  HANDLER = 'main'
+AS
+$$
+def main():
+    message = "Oh, they are obsessed with Arrays, how weird. And then it's all about Graphs and Dynamic Programming. How pathetic!"
+    return message
+$$;
+
+GRANT USAGE ON PROCEDURE CORE.TOP_3_TOPICS() TO APPLICATION ROLE FROSTY_APP_ROLE;
+```
+
+ローカルでこの2つのファイルを作ったら、アップロードします。Snowsightのコンソールで「+Files」すればOK。
+
+![upload_files](img/upload_files.png)
+
+6. バージョンを付与する
+ワークシートで以下を実行してアプリにバージョンを作成
+```sql
+ALTER APPLICATION PACKAGE SPY_ON_FIREY_FRIDEY
+  ADD VERSION v1_0
+  USING '@FROSTY_APP.APP_DEV.app_stage/'
+  LABEL = 'MyApp Version 1.0';
+```
+
+これでProjects -> App Packagesで見たときに無事にバージョンが作られます
+
+![version1_exists](img/version1_exists.png)
+
+7. v1_0からアプリケーションをインストール
+```sql
+CREATE APPLICATION SPY_ON_FIREY_FRIDEY_APP FROM APPLICATION PACKAGE SPY_ON_FIREY_FRIDEY
+  USING VERSION v1_0;
+```
+
+8. 改めてPROCEDUREを読んでみる
+call SPY_ON_FIREY_FRIDEY_APP.CORE.TOP_3_TOPICS();
+
+
+ね。簡単でしょ？
+
+ちなみに今回Snowsight縛りでやってみましたが、実際にはCLIを使ったほうが簡単だと思います。
+
+チュートリアルがこの辺り  
+https://docs.snowflake.com/ja/developer-guide/native-apps/tutorials/getting-started-tutorial
+
 # Snowflake Native App 小咄
 
 Snowflake Native Appのことを遠い世界の話だと思っている人が多いですが、実はそんなことはありません。
@@ -113,4 +190,3 @@ There are 1 unused configuration paths:
 
 https://blog.truestar.co.jp/prepper/20250411/62507/
 
-（実はベータ版なのでFunctionは未実装なのですが、正式版にはなんとか）
